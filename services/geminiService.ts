@@ -2,12 +2,16 @@
 import { GoogleGenAI } from "@google/genai";
 import { AttendanceEntry } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getDashboardInsights = async (data: AttendanceEntry[]) => {
-  const summary = JSON.stringify(data.slice(-10)); // Take last 10 entries for context
+  // Prevent crash if data is empty or process.env is not yet available
+  if (!data || data.length === 0) return "Start marking attendance to see AI-powered insights here.";
+  
+  const summary = JSON.stringify(data.slice(-10)); 
   
   try {
+    // Initialize inside the function to ensure process.env.API_KEY is accessed at runtime
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Analyze the following staff attendance data and provide 3 short, professional insights or recommendations for productivity: ${summary}`,
@@ -20,6 +24,6 @@ export const getDashboardInsights = async (data: AttendanceEntry[]) => {
     return response.text;
   } catch (error) {
     console.error("Gemini Error:", error);
-    return "Unable to generate insights at this moment. Maintain consistent attendance for better reporting.";
+    return "Insights are currently unavailable. Please ensure your API key is configured correctly.";
   }
 };
