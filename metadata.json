@@ -1,0 +1,7 @@
+{
+  "name": "StaffSync Pro",
+  "description": "A comprehensive staff attendance and activity tracking application with interactive dashboards and reporting features.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
